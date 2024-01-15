@@ -27,8 +27,8 @@ public class Reloj extends javax.swing.JFrame implements Runnable {
     private void initComponents() {
 
         lblReloj = new javax.swing.JLabel();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jCheckBox2 = new javax.swing.JCheckBox();
+        veintiCuatroH = new javax.swing.JCheckBox();
+        ActivarAlarma = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -36,9 +36,14 @@ public class Reloj extends javax.swing.JFrame implements Runnable {
         lblReloj.setText("jLabel1");
         lblReloj.setToolTipText("");
 
-        jCheckBox1.setText("Modo 24 horas");
+        veintiCuatroH.setText("Modo 24 horas");
 
-        jCheckBox2.setText("Activar Alarma");
+        ActivarAlarma.setText("Programar Alarma");
+        ActivarAlarma.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ActivarAlarmaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -50,10 +55,10 @@ public class Reloj extends javax.swing.JFrame implements Runnable {
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addGap(79, 79, 79)
-                .addComponent(jCheckBox1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 44, Short.MAX_VALUE)
-                .addComponent(jCheckBox2)
-                .addGap(73, 73, 73))
+                .addComponent(veintiCuatroH)
+                .addGap(41, 41, 41)
+                .addComponent(ActivarAlarma)
+                .addContainerGap(50, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -62,51 +67,83 @@ public class Reloj extends javax.swing.JFrame implements Runnable {
                 .addComponent(lblReloj, javax.swing.GroupLayout.PREFERRED_SIZE, 230, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jCheckBox1)
-                    .addComponent(jCheckBox2))
-                .addContainerGap(29, Short.MAX_VALUE))
+                    .addComponent(veintiCuatroH)
+                    .addComponent(ActivarAlarma))
+                .addContainerGap(26, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void ActivarAlarmaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ActivarAlarmaActionPerformed
+         java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new ConfigurarAlarma().setVisible(true);
+            }
+        });
+    }//GEN-LAST:event_ActivarAlarmaActionPerformed
+
    
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JCheckBox jCheckBox1;
-    private javax.swing.JCheckBox jCheckBox2;
+    private javax.swing.JButton ActivarAlarma;
     private javax.swing.JLabel lblReloj;
+    private javax.swing.JCheckBox veintiCuatroH;
     // End of variables declaration//GEN-END:variables
 
-    @Override
-    public void run() {
-        Thread ct = Thread.currentThread();
+/**
+ * Implementa el método 'run()' de la interfaz 'Runnable'. Este método se ejecuta en un hilo separado
+ * y se encarga de actualizar continuamente la visualización del reloj en la interfaz gráfica.
+ */
+@Override
+public void run() {
+    // Obtener la referencia al hilo actual
+    Thread ct = Thread.currentThread();
+    
+    // Mantener la ejecución mientras el hilo actual sea igual al hilo 'h1'
+    while(ct==h1){
+        // Calcular y actualizar la hora actual
+        calcula();
         
-        while(ct==h1){
-            calcula();
-            lblReloj.setText(hora+":"+minuto+":"+segundo +" " + ampm);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Reloj.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            
+        // Actualizar el componente de texto con la hora formateada
+        lblReloj.setText(hora + ":" + minuto + ":" + segundo + " " + ampm);
+        
+        try {
+            // Dormir el hilo durante 1000 milisegundos (1 segundo)
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            // Manejar excepciones relacionadas con la interrupción del hilo
+            Logger.getLogger(Reloj.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+}
 
-    private void calcula() {
-    Calendar calendario= new GregorianCalendar();
+/**
+ * Calcula la hora actual y actualiza las variables de instancia 'hora', 'minuto', 'segundo' y 'ampm'.
+ */
+private void calcula() {
+    // Obtener una instancia del calendario gregoriano
+    Calendar calendario = new GregorianCalendar();
+    
+    // Obtener la fecha y hora actual
     Date fechahoraAcutual = new Date();
     
+    // Configurar el calendario con la fecha y hora actual
     calendario.setTime(fechahoraAcutual);
-    ampm=calendario.get(Calendar.AM_PM)==Calendar.AM?"AM":"PM";
     
-    if(ampm.equals("PM")){
-        int h=calendario.get(Calendar.HOUR_OF_DAY)-12;
-        hora= h>9?""+h:"0"+h;
-    }else{
-        hora=calendario.get(Calendar.HOUR_OF_DAY)>9?""+calendario.get(Calendar.HOUR_OF_DAY):"0"+calendario.get(Calendar.HOUR_OF_DAY);
+    // Determinar si es AM o PM y asignar el valor correspondiente a la variable 'ampm'
+    ampm = calendario.get(Calendar.AM_PM) == Calendar.AM ? "AM" : "PM";
+    
+    // Formatear la hora según el formato de 12 horas
+    if (ampm.equals("PM")) {
+        int h = calendario.get(Calendar.HOUR_OF_DAY) - 12;
+        hora = h > 9 ? "" + h : "0" + h;
+    } else {
+        hora = calendario.get(Calendar.HOUR_OF_DAY) > 9 ? "" + calendario.get(Calendar.HOUR_OF_DAY) : "0" + calendario.get(Calendar.HOUR_OF_DAY);
     }
-        minuto= calendario.get(Calendar.HOUR_OF_DAY)>9?""+calendario.get(Calendar.MINUTE):"0"+calendario.get(Calendar.MINUTE);
-        segundo= calendario.get(Calendar.HOUR_OF_DAY)>9?""+calendario.get(Calendar.SECOND):"0"+calendario.get(Calendar.SECOND );
-    }
+    
+    // Formatear el minuto y el segundo, asegurándose de tener dos dígitos
+    minuto = calendario.get(Calendar.MINUTE) > 9 ? "" + calendario.get(Calendar.MINUTE) : "0" + calendario.get(Calendar.MINUTE);
+    segundo = calendario.get(Calendar.SECOND) > 9 ? "" + calendario.get(Calendar.SECOND) : "0" + calendario.get(Calendar.SECOND );
+}
+
 }
